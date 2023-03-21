@@ -1,0 +1,15 @@
+use WorldEvents
+with Table1 as (select CountryName,ContinentName from tblCountry as Pays inner join tblContinent as Continent
+on Pays.ContinentID=Continent.ContinentID),
+Matable2 as (select *,count(ContinentName) over(partition by ContinentName order by ContinentName) 
+as NombreDePaysParContinent from Table1),
+Matable3 as (select CountryName,ContinentName,NombreDePaysParContinent, dense_RANK() over ( order by NombreDePaysParContinent) as LeRang from Matable2)
+select distinct case when ContinentName like 'Not applicable' then 'International Or Space' else ContinentName end  as Continent,NombreDePaysParContinent,LeRang from Matable3 
+order by LeRang
+
+--Nombre d'evenements par continent --
+with LesEvenements as (select * from tblEvent),
+LesEvenementsDansLesPays as (select EventName,Ev.CountryID,CountryName,CategoryID,ContinentID from LesEvenements as Ev inner join tblCountry as Pays on  Ev.CountryID=Pays.CountryID),
+LhEdDjiwkAHjk4rncZtQA1HWDktpEue8Ly as (select CountryName,ContinentName,EventName from LesEvenementsDansLesPays EvPays inner join tblContinent as Continent on EvPays.ContinentID=Continent.ContinentID),
+ResultatATrier as (select CountryName,ContinentName,EventName, count(ContinentName) over(partition by ContinentName order by ContinentName) as NombreDevenement from LhEdDjiwkAHjk4rncZtQA1HWDktpEue8Ly)
+select * from ResultatATrier order by NombreDevenement
